@@ -1,12 +1,12 @@
-import React from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import React from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 export default function Header() {
-  const location = useLocation()
-  const navigate  = useNavigate()
+  const location = useLocation();
+  const navigate  = useNavigate();
   function pathMathRoute(route){
     if (route === location.pathname){
-        return true
+        return true;
     }
   }
   return (
@@ -19,23 +19,23 @@ export default function Header() {
             <div>
                 <ul className='flex space-x-10'>
                     <li className={`cursor-pointer py-3 text-sm font-semibold text-gray-400 border-b-[3px] border-b-transparent
-                    ${pathMathRoute("/") && "text-black border-b-red-600"}`}
+                    ${pathMathRoute("/") && "text-gray-950 border-b-red-600"}`}
                      onClick={()=>navigate("/")}>Home</li>
                     
                     <li className={`cursor-pointer py-3 text-sm font-semibold text-gray-400 border-b-[3px] border-b-transparent
-                    ${pathMathRoute("/offers") && "text-black border-b-red-600"}`}
+                    ${pathMathRoute("/offers") && "text-gray-950 border-b-red-600"}`}
                     onClick={()=>navigate("/offers")}>Offers</li>
                     
                     <li className={`cursor-pointer py-3 text-sm font-semibold text-gray-400 border-b-[3px] border-b-transparent
-                    ${pathMathRoute("/sign-in") && "text-black border-b-red-600"}`}
-                    onClick={()=>navigate("/sign-in")}>Sign In</li>
+                    ${pathMathRoute("/sign-in") && " text-gray-950 border-b-red-600"}`}
+                    onClick={() => navigate("/sign-in")}>Sign In</li>
 
                     <li className={`cursor-pointer py-3 text-sm font-semibold text-gray-400 border-b-[3px] border-b-transparent
-                    ${pathMathRoute("/contactus") && "text-black border-b-red-600"}`}
+                    ${pathMathRoute("/contactus") && "text-gray-950 border-b-red-600"}`}
                     onClick={()=>navigate("/contactus")}>Contact Us</li>
                 </ul>
             </div>
         </header>
     </div>
-  )
+  );
 }
