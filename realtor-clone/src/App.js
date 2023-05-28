@@ -7,6 +7,8 @@ import SignUp from "./pages/SignUp";
 import Home from "./pages/Home";
 import Header from "./components/Header";
 import ContactUs from "./pages/ContactUs";
+import { ToastContainer} from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 function App() {
   return (
     <>
@@ -22,6 +24,18 @@ function App() {
           <Route path="/contactus" element={<ContactUs />} />
         </Routes>
       </Router>
+      <ToastContainer
+      position="bottom-center"
+      autoClose={5000}
+      hideProgressBar={false}
+      newestOnTop={false}
+      closeOnClick
+      rtl={false}
+      pauseOnFocusLoss
+      draggable
+      pauseOnHover
+      theme="dark"
+      />
     </>
   );
 }
