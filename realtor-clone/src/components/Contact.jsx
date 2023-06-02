@@ -14,6 +14,7 @@ export default function Contact({userRef, listing}) {
       
       if(docSnap.exists()){
         setLandlord(docSnap.data())
+        console.log("user: ", userRef )
       }else{
         toast.error("Could not get Landlord Info")
       }
