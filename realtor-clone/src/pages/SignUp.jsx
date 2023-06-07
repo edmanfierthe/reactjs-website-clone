@@ -1,51 +1,67 @@
-import React, { useState } from 'react'
-import {AiFillEyeInvisible, AiFillEye} from "react-icons/ai"
+import React, { useState } from 'react';
+import { AiFillEyeInvisible, AiFillEye } from 'react-icons/ai';
 import { Link } from 'react-router-dom';
 import OAuth from '../components/OAuth';
-import { getAuth, createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { db } from "../firebase";
+import { getAuth, createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { db } from '../firebase';
 import { doc, serverTimestamp, setDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
 export default function SignUp() {
-  const [showPassword, setShowPassword] = useState(false)
+  // State to toggle password visibility
+  const [showPassword, setShowPassword] = useState(false);
+
+  // State to store form data (name, email, and password)
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
+    name: '',
+    email: '',
+    password: '',
   });
 
-  const {name, email, password } = formData;
-  const navigate = useNavigate()
+  const { name, email, password } = formData;
 
-  function onChange(e){
+  // Hook for navigation
+  const navigate = useNavigate();
+
+  // Function to handle form input changes
+  function onChange(e) {
     setFormData((prevState) => ({
       ...prevState,
       [e.target.id]: e.target.value,
-    }))
+    }));
   }
 
-  async function onSubmit(e){
-    e.preventDefault()
+  // Function to handle form submission
+  async function onSubmit(e) {
+    e.preventDefault();
 
     try {
+      // Get authentication instance
       const auth = getAuth();
+
+      // Create user with email and password
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      
+
+      // Update user profile with display name
       updateProfile(auth.currentUser, {
         displayName: name,
-      })
-      const user = userCredential.user
-      const formDataCopy = {...formData}
-      delete formDataCopy.password
+      });
+
+      const user = userCredential.user;
+
+      // Copy the form data and remove the password field
+      const formDataCopy = { ...formData };
+      delete formDataCopy.password;
       formDataCopy.timestamp = serverTimestamp();
 
-      await setDoc(doc(db, "users", user.uid), formDataCopy)
-      toast.success("Sign up was successful")
-      navigate("/")
+      // Save user data to Firestore
+      await setDoc(doc(db, 'users', user.uid), formDataCopy);
+
+      toast.success('Sign up was successful');
+      navigate('/');
     } catch (error) {
-        toast.error("Something went wrong with the registration")
+      toast.error('Something went wrong with the registration');
     }
   }
 

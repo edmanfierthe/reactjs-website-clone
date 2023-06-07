@@ -97,6 +97,8 @@ export default function Home() {
     }
     fetchListings();
   }, []);
+
+  
   return (
     <div>
       <Slider />

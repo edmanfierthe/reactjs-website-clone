@@ -1,37 +1,53 @@
-import React, { useState } from 'react'
-import {AiFillEyeInvisible, AiFillEye} from "react-icons/ai"
+import React, { useState } from 'react';
+import { AiFillEyeInvisible, AiFillEye } from 'react-icons/ai';
 import { Link, useNavigate } from 'react-router-dom';
 import OAuth from '../components/OAuth';
 import { signInWithEmailAndPassword, getAuth } from 'firebase/auth';
-import {toast} from "react-toastify"
-
+import { toast } from 'react-toastify';
 
 export default function SignIn() {
-  const [showPassword, setShowPassword] = useState(false)
+  // State to toggle password visibility
+  const [showPassword, setShowPassword] = useState(false);
+
+  // State to store form data (email and password)
   const [formData, setFormData] = useState({
-    email: "",
-    password: "",
+    email: '',
+    password: '',
   });
-  const {email, password } = formData;
-  const navigate = useNavigate()
-  function onChange(e){
+  const { email, password } = formData;
+
+  // Hook for navigation
+  const navigate = useNavigate();
+
+  // Function to handle form input changes
+  function onChange(e) {
     setFormData((prevState) => ({
       ...prevState,
       [e.target.id]: e.target.value,
-    }))
+    }));
   }
 
-  async function onSubmit(e){
-    e.preventDefault()
+  // Function to handle form submission
+  async function onSubmit(e) {
+    e.preventDefault();
 
     try {
-        const auth = getAuth();
-        const userCredential = await signInWithEmailAndPassword(auth, email, password)
-        if(userCredential.user){
-          navigate("/")
-        }
+      // Get authentication instance
+      const auth = getAuth();
+
+      // Sign in with email and password
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+
+      // If user is successfully signed in, navigate to home page
+      if (userCredential.user) {
+        navigate('/');
+      }
     } catch (error) {
-        toast.error("Wrong Credentials")
+      toast.error('Wrong Credentials');
     }
   }
 

@@ -6,55 +6,57 @@ import Spinner from '../components/Spinner';
 import ListingItem from '../components/ListingItem';
 
 export default function Offers() {
-
-  const [listings, setListings] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [lastFetchedListing, setLastFetchedListing] = useState(null);
+  // State variables
+  const [listings, setListings] = useState(null); // Stores the fetched listings
+  const [loading, setLoading] = useState(true); // Indicates if listings are being fetched
+  const [lastFetchedListing, setLastFetchedListing] = useState(null); // Stores the last fetched listing
 
   useEffect(()=>{
+    // Fetch listings when component mounts
     async function fetchListings(){
       try {
-        const listingsRef = collection(db, "listings")
+        const listingsRef = collection(db, "listings");
         const q = query(listingsRef, where("offer", "==", true), orderBy("timestamp", "desc"), limit(8));
 
         const querySnap = await getDocs(q);
-        const lastVisible = querySnap.docs[querySnap.docs.length-1]
+        const lastVisible = querySnap.docs[querySnap.docs.length-1];
         setLastFetchedListing(lastVisible);
-        const listings = []
+        const listings = [];
         querySnap.forEach((doc)=>{
           return listings.push({
             id: doc.id,
             data: doc.data()
-          })
-        })
+          });
+        });
         setListings(listings);
         setLoading(false);
       } catch (error) {
-        toast.error("Could not fetch Listing")
+        toast.error("Could not fetch Listing");
       }
     }
-    fetchListings()
+    fetchListings();
   }, []);
 
   async function onFetchMoreListing(){
+    // Fetch more listings when "Load more" button is clicked
     try {
-      const listingsRef = collection(db, "listings")
+      const listingsRef = collection(db, "listings");
       const q = query(listingsRef, where("offer", "==", true), orderBy("timestamp", "desc"), startAfter(lastFetchedListing), limit(4));
 
       const querySnap = await getDocs(q);
-      const lastVisible = querySnap.docs[querySnap.docs.length-1]
+      const lastVisible = querySnap.docs[querySnap.docs.length-1];
       setLastFetchedListing(lastVisible);
-      const listings = []
+      const listings = [];
       querySnap.forEach((doc)=>{
         return listings.push({
           id: doc.id,
           data: doc.data()
-        })
-      })
+        });
+      });
       setListings((prevState)=>[...prevState, ...listings]);
       setLoading(false);
     } catch (error) {
-      toast.error("Could not fetch Listing")
+      toast.error("Could not fetch Listing");
     }
   }
 

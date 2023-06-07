@@ -1,5 +1,5 @@
 import { collection, getDocs, limit, orderBy, query, startAfter, where } from 'firebase/firestore';
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { db } from '../firebase';
 import Spinner from '../components/Spinner';
@@ -7,59 +7,61 @@ import ListingItem from '../components/ListingItem';
 import { useParams } from 'react-router-dom';
 
 export default function Category() {
+  // State variables
+  const [listings, setListings] = useState(null); // Listings data
+  const [loading, setLoading] = useState(true); // Loading state
+  const [lastFetchedListing, setLastFetchedListing] = useState(null); // Last fetched listing
+  const params = useParams(); // Parameters from the URL
 
-  const [listings, setListings] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [lastFetchedListing, setLastFetchedListing] = useState(null);
-  const params = useParams()
-
-  useEffect(()=>{
-    async function fetchListings(){
+  // Fetch listings on component mount or when categoryName changes
+  useEffect(() => {
+    async function fetchListings() {
       try {
-        const listingsRef = collection(db, "listings")
-        const q = query(listingsRef, where("type", "==", params.categoryName), orderBy("timestamp", "desc"), limit(8));
+        const listingsRef = collection(db, 'listings');
+        const q = query(listingsRef, where('type', '==', params.categoryName), orderBy('timestamp', 'desc'), limit(8));
 
         const querySnap = await getDocs(q);
-        const lastVisible = querySnap.docs[querySnap.docs.length-1]
+        const lastVisible = querySnap.docs[querySnap.docs.length - 1];
         setLastFetchedListing(lastVisible);
-        const listings = []
-        querySnap.forEach((doc)=>{
+        const listings = [];
+        querySnap.forEach((doc) => {
           return listings.push({
             id: doc.id,
-            data: doc.data()
-          })
-        })
+            data: doc.data(),
+          });
+        });
         setListings(listings);
         setLoading(false);
       } catch (error) {
-        toast.error("Could not fetch Listing")
+        toast.error('Could not fetch Listing');
       }
     }
-    fetchListings()
+
+    fetchListings();
   }, [params.categoryName]);
 
-  async function onFetchMoreListing(){
+  // Fetch more listings
+  async function onFetchMoreListing() {
     try {
-      const listingsRef = collection(db, "listings")
-      const q = query(listingsRef, where("type", "==", params.categoryName), orderBy("timestamp", "desc"), startAfter(lastFetchedListing), limit(4));
+      const listingsRef = collection(db, 'listings');
+      const q = query(listingsRef, where('type', '==', params.categoryName), orderBy('timestamp', 'desc'), startAfter(lastFetchedListing), limit(4));
 
       const querySnap = await getDocs(q);
-      const lastVisible = querySnap.docs[querySnap.docs.length-1]
+      const lastVisible = querySnap.docs[querySnap.docs.length - 1];
       setLastFetchedListing(lastVisible);
-      const listings = []
-      querySnap.forEach((doc)=>{
+      const listings = [];
+      querySnap.forEach((doc) => {
         return listings.push({
           id: doc.id,
-          data: doc.data()
-        })
-      })
-      setListings((prevState)=>[...prevState, ...listings]);
+          data: doc.data(),
+        });
+      });
+      setListings((prevState) => [...prevState, ...listings]);
       setLoading(false);
     } catch (error) {
-      toast.error("Could not fetch Listing")
+      toast.error('Could not fetch Listing');
     }
   }
-
 
 
   return (

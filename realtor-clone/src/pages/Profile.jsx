@@ -2,13 +2,13 @@ import React, { useEffect, useState } from 'react'
 import { getAuth, updateProfile } from "firebase/auth"
 import { Link, useNavigate } from 'react-router-dom';
 import { toast} from "react-toastify"
-import {doc, orderBy, query, updateDoc, where, getDocs, collection, deleteDoc} from "firebase/firestore"
-import {db} from "../firebase"
-import {FcHome} from "react-icons/fc"
+import { doc, orderBy, query, updateDoc, where, getDocs, collection, deleteDoc } from "firebase/firestore"
+import { db } from "../firebase"
+import { FcHome } from "react-icons/fc"
 import ListingItem from "../components/ListingItem";
+
 export default function Profile() {
-  
-  const auth = getAuth()
+  const auth = getAuth();
   const navigate = useNavigate();
   const [changeDetail, setChangeDetail] = useState(false);
   const [listings, setListings] = useState(null);
@@ -18,12 +18,15 @@ export default function Profile() {
     email: auth.currentUser.email,
   });
   const {name, email} = formData;
+
   function onLogout(){
+    // Sign out user and navigate to home page
     auth.signOut();
     navigate("/");
   }
 
   function onChange(e){
+    // Update form data when input values change
     setFormdata((prevState)=> ({
       ...prevState,
       [e.target.id]: e.target.value,
@@ -33,25 +36,26 @@ export default function Profile() {
   async function onsubmit(){
     try {
       if(auth.currentUser.displayName !== name){
-        //update the display name in firebase auth
+        // Update the display name in Firebase Auth
         await updateProfile(auth.currentUser, {
           displayName: name,
         });
 
-        // update name in the firestore
+        // Update name in Firestore
         const docRef = doc(db, "users", auth.currentUser.uid)
         await updateDoc(docRef, {
           name,
         });
       }
-      toast.success("Profile Updated")
+      toast.success("Profile Updated");
     } catch (error) {
-        toast.error("Could not update the profile")
+        toast.error("Could not update the profile");
     }
   }
 
   useEffect(()=> {
     async function fetchUserListings(){
+      // Fetch listings associated with the current user
       const listingRef = collection(db, "listings");
       const q = query(listingRef, where("userRef", "==", auth.currentUser.uid), orderBy("timestamp", "desc"));
       const querySnap = await getDocs(q);
@@ -70,19 +74,20 @@ export default function Profile() {
 
   async function onDelete(listingID){
     if (window.confirm("Are you sure you want to delete this listing?")){
+      // Delete the listing from Firestore
       await deleteDoc(doc(db, "listings", listingID))
       const updatedListings = listings.filter(
         (listing) => listing.id !== listingID
       );
       setListings(updatedListings);
-      toast.success("Listing Successfully deleted")
+      toast.success("Listing Successfully deleted");
     }
   }
 
   function onEdit(listingID){
-    navigate(`/edit-listing/${listingID}`)
+    navigate(`/edit-listing/${listingID}`);
   }
-
+  
   return (
     <>
       <section className='max-w-6xl mx-auto flex justify-center items-center flex-col'>
